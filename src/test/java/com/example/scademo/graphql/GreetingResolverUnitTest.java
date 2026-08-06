@@ -7,9 +7,9 @@ import org.springframework.web.client.RestClient;
 
 class GreetingResolverUnitTest {
 
-    @Test
-    void greetingFormatsName() {
-        GreetingResolver resolver = new GreetingResolver(RestClient.builder());
-        assertThat(resolver.greeting("World")).isEqualTo("Hello, World!");
-    }
+  @Test
+  void greetingFormatsName() {
+    GreetingResolver resolver = new GreetingResolver(RestClient.builder());
+    assertThat(resolver.greeting("World")).isEqualTo("Hello, World!");
+  }
 }
