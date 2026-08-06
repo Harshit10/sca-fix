@@ -6,22 +6,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestClient;
 
 /**
- * Deliberately trivial GraphQL data fetcher. It calls out to an "external"
- * OAuth-protected downstream (stubbed by WireMock in tests) so the demo
- * exercises the same OAuth-token-during-context-startup shape described in
- * the integration test scaffolding.
+ * Deliberately trivial GraphQL data fetcher. It calls out to an "external" OAuth-protected
+ * downstream (stubbed by WireMock in tests) so the demo exercises the same
+ * OAuth-token-during-context-startup shape described in the integration test scaffolding.
  */
 @Controller
 public class GreetingResolver {
 
-    private final RestClient restClient;
+  private final RestClient restClient;
 
-    public GreetingResolver(RestClient.Builder builder) {
-        this.restClient = builder.build();
-    }
+  public GreetingResolver(RestClient.Builder builder) {
+    this.restClient = builder.build();
+  }
 
-    @QueryMapping
-    public String greeting(@Argument String name) {
-        return "Hello, " + name + "!";
-    }
+  @QueryMapping
+  public String greeting(@Argument String name) {
+    return "Hello, " + name + "!";
+  }
 }
