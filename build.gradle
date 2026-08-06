@@ -1,0 +1,85 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.diffplug.spotless' version "${spotlessVersion}"
+    id 'org.sonarqube' version "${sonarqubeVersion}"
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', springCloudVersion)
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation "io.micrometer:micrometer-tracing:${micrometerTracingVersion}"
+
+    // ---- test scaffolding: DO NOT REMOVE as part of any SCA fix ----
+    // spring-cloud-contract-wiremock is what supplies @AutoConfigureWireMock,
+    // used below to stub the OAuth token endpoint during Spring context startup.
+    testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.graphql:spring-graphql-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    filter {
+        excludeTestsMatching '*IntegrationTest'
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests (WireMock + Testcontainers backed).'
+    group = 'verification'
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching '*IntegrationTest'
+    }
+    shouldRunAfter test
+}
+
+tasks.named('check') {
+    dependsOn integrationTest
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        target 'src/**/*.java'
+    }
+}
+
+sonarqube {
+    properties {
+        property 'sonar.projectKey', 'sca-demo'
+    }
+}

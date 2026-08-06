@@ -1,0 +1,66 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard",
+  "labels": ["dependencies", "sca"],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 0,
+  "rebaseWhen": "conflicted",
+  "packageRules": [
+    {
+      "matchManagers": ["gradle"],
+      "matchPackageNames": ["org.springframework.boot"],
+      "groupName": "spring-boot",
+      "branchTopic": "spring-boot",
+      "commitMessageTopic": "Spring Boot"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackageNames": ["org.springframework.cloud:spring-cloud-dependencies"],
+      "groupName": "spring-cloud",
+      "branchTopic": "spring-cloud",
+      "commitMessageTopic": "Spring Cloud BOM"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackagePrefixes": ["org.springdoc"],
+      "groupName": "springdoc-openapi",
+      "branchTopic": "springdoc-openapi"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackagePrefixes": ["io.micrometer:micrometer-tracing"],
+      "groupName": "micrometer-tracing",
+      "branchTopic": "micrometer-tracing"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackageNames": ["com.diffplug.spotless"],
+      "groupName": "spotless-gradle-plugin",
+      "branchTopic": "spotless"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackageNames": ["org.sonarqube"],
+      "groupName": "sonarqube-gradle-plugin",
+      "branchTopic": "sonarqube"
+    },
+    {
+      "matchManagers": ["gradle"],
+      "matchPackagePrefixes": ["org.testcontainers"],
+      "groupName": "testcontainers",
+      "branchTopic": "testcontainers"
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["dependencies", "sca", "major"],
+      "dependencyDashboardApproval": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "sca"]
+  },
+  "osvVulnerabilityAlerts": true
+}

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: sca-demo
+  graphql:
+    graphiql:
+      enabled: true
+  security:
+    oauth2:
+      client:
+        registration:
+          downstream:
+            client-id: demo-client
+            client-secret: demo-secret
+            authorization-grant-type: client_credentials
+        provider:
+          downstream:
+            token-uri: https://downstream.example.internal/oauth/token
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

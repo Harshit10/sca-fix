@@ -1,0 +1,58 @@
+version: "1"
+
+metadata:
+  template: false
+
+steps:
+  - name: build
+    image: eclipse-temurin:21-jdk-jammy
+    pull: always
+    commands:
+      - ./gradlew --no-daemon clean assemble
+
+  - name: unit-test
+    image: eclipse-temurin:21-jdk-jammy
+    commands:
+      - ./gradlew --no-daemon test
+
+  - name: integration-test
+    image: docker.io/library/docker:24-dind
+    environment:
+      DOCKER_HOST: tcp://localhost:2375
+    commands:
+      - apk add --no-cache openjdk21
+      - ./gradlew --no-daemon integrationTest
+
+  - name: sca-scan-mend
+    image: eclipse-temurin:21-jre-jammy
+    environment:
+      WS_APIKEY:
+        from_secret: mend_api_key
+      WS_USERURL:
+        from_secret: mend_user_url
+      WS_PRODUCTNAME: target-sca-demo
+      WS_PROJECTNAME: sca-demo
+    commands:
+      - curl -LJO https://unified-agent.s3.amazonaws.com/wss-unified-agent.jar
+      - java -jar wss-unified-agent.jar -c mend/wss-unified-agent.config
+
+  - name: docker-build
+    image: docker.io/library/docker:24-cli
+    environment:
+      DOCKER_HOST: tcp://localhost:2375
+    commands:
+      - docker build -t sca-demo:${VELA_BUILD_COMMIT:0:7} .
+
+services:
+  - name: docker
+    image: docker.io/library/docker:24-dind
+
+secrets:
+  - name: mend_api_key
+    key: sca-demo/mend/api-key
+    engine: native
+    type: repo
+  - name: mend_user_url
+    key: sca-demo/mend/user-url
+    engine: native
+    type: repo
