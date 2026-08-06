@@ -34,6 +34,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    // Spring Boot 4.1.0 split RestClient auto-configuration out of spring-boot-starter-web
+    // into its own starter (a documented breaking change vs 4.0.x) — GreetingResolver's
+    // RestClient.Builder constructor injection needs this explicitly now.
+    implementation 'org.springframework.boot:spring-boot-starter-restclient'
 
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 
@@ -41,12 +45,21 @@ dependencies {
     implementation "io.micrometer:micrometer-tracing:${micrometerTracingVersion}"
 
     // ---- test scaffolding: DO NOT REMOVE as part of any SCA fix ----
-    // spring-cloud-contract-wiremock is what supplies @AutoConfigureWireMock,
-    // used below to stub the OAuth token endpoint during Spring context startup.
+    // spring-cloud-contract-wiremock's @AutoConfigureWireMock pulls in
+    // WireMockRestTemplateConfiguration, which references
+    // org.springframework.boot.web.client.RestTemplateCustomizer — removed/relocated in
+    // Spring Boot 4.x's reorganized autoconfigure modules, so that autoconfiguration chain
+    // fails to load even though this app never uses RestTemplate. Migrated to the official
+    // WireMock 3 + Spring Boot integration below (org.wiremock.integrations:wiremock-spring-boot),
+    // which supplies @EnableWireMock/@ConfigureWireMock and never touches that class.
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
+    testImplementation 'org.wiremock.integrations:wiremock-spring-boot:4.2.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    testImplementation 'org.testcontainers:junit-jupiter'
+    // testcontainers 2.x renamed this module org.testcontainers:junit-jupiter ->
+    // org.testcontainers:testcontainers-junit-jupiter (same Java package, artifact
+    // coordinate only); Spring Boot 4.x's managed testcontainers.version is 2.0.5.
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
     testImplementation "org.testcontainers:testcontainers:${testcontainersVersion}"
 }
 
