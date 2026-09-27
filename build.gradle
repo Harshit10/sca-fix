@@ -48,7 +48,7 @@ dependencies {
     // wiremock-spring-boot is what supplies @EnableWireMock/@ConfigureWireMock, used below
     // to stub the OAuth token endpoint during Spring context startup.
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
-    testImplementation 'org.wiremock.integrations:wiremock-spring-boot:4.2.2'
+    testImplementation 'org.wiremock.integrations:wiremock-spring-boot:4.4.2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
